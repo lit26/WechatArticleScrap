@@ -3,9 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 
 # parameter
-article = 'RU7GHNSAGhw0GdLCWfHwqg'
-
-
+# https://mp.weixin.qq.com/s/+article
+article = '' 
 
 header = {'accept': 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, deflate, br',
