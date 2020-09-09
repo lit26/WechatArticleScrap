@@ -3,8 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # parameter
-# https://mp.weixin.qq.com/s/+article
-article = '' 
+article = ''
 
 header = {'accept': 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, deflate, br',
@@ -34,41 +33,52 @@ img_header = {
                 Safari/537.36'
 }
 
-print('[Info] Fetching content ...')
-url = 'https://mp.weixin.qq.com/s/'+article
-website = requests.get(url, headers=header)
-soup = BeautifulSoup(website.text, 'lxml')
-output_html = soup.prettify()
-imgs = soup.findAll('img')
-img_urls = []
-for imgs in imgs:
-    try:
-        img_urls.append(imgs['data-src'])
-    except:
-        print('Blank image')
+def fetchArticle(article):
+    print('[Info] Fetching content ...')
+    url = 'https://mp.weixin.qq.com/s/'+article
+    website = requests.get(url, headers=header)
+    soup = BeautifulSoup(website.text, 'lxml')
+    output_html = soup.prettify()
+    imgs = soup.findAll('img')
+    img_urls = []
+    for imgs in imgs:
+        try:
+            img_urls.append(imgs['data-src'])
+        except:
+            print('Blank image')
 
-if not os.path.isdir(article):
-    os.mkdir(article)
-img_dict = {}
+    if not os.path.isdir(article):
+        os.mkdir(article)
+    img_dict = {}
 
-print('[Info] Fetching images...')
-for i, img_url in enumerate(img_urls):
-    try:
-        img_format = img_url.split('=')[-1]
-        img_response = requests.get(img_url,headers=img_header)
-        file = open("{}/{}.{}".format(article,i,img_format), "wb")
-        img_dict[img_url] = "{}/{}.{}".format(article,i,img_format)
-        file.write(img_response.content)
-        file.close()
+    print('[Info] Fetching images...')
+    for i, img_url in enumerate(img_urls):
+        try:
+            img_format = img_url.split('=')[-1]
+            img_response = requests.get(img_url,headers=img_header)
+            file = open("{}/{}.{}".format(article,i,img_format), "wb")
+            img_dict[img_url] = "{}/{}.{}".format(article,i,img_format)
+            file.write(img_response.content)
+            file.close()
 
-        old_img = 'data-src="'+img_url+'"'
-        new_img = 'src="'+img_dict[img_url]+'"'
-        output_html = output_html.replace(old_img,new_img)
-    except:
-        print('error')
+            old_img = 'data-src="'+img_url+'"'
+            new_img = 'src="'+img_dict[img_url]+'"'
+            output_html = output_html.replace(old_img,new_img)
+        except:
+            print('error')
+    return output_html
 
-print('[Info] Output file...')
-f = open(article+".html", "w")
-f.write(output_html)
-f.close()
-print('Done')
+def outputWeb(output_html):
+    # replace width
+    for i in range(20,80,5):
+        ori_width = i
+        new_width = i-1
+        output_html = output_html.replace('width: '+str(ori_width)+'%','width: '+str(new_width)+'%')
+    print('[Info] Output file...')
+    f = open(article+".html", "w")
+    f.write(output_html)
+    f.close()
+    print('[Info] Done')
+
+output_html = fetchArticle(article)
+outputWeb(output_html)
