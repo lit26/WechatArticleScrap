@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # parameter
-article = ''
+article = 'pbXjzC_WID6hQ01RsYuilA'
 
 header = {'accept': 'application/json, text/plain, */*',
           'accept-encoding': 'gzip, deflate, br',
@@ -75,7 +75,7 @@ def outputWeb(output_html):
         new_width = i-1
         output_html = output_html.replace('width: '+str(ori_width)+'%','width: '+str(new_width)+'%')
     print('[Info] Output file...')
-    f = open(article+".html", "w")
+    f = open(article+".html", "w", encoding="utf-8")
     f.write(output_html)
     f.close()
     print('[Info] Done')
